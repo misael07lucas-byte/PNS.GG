@@ -6,7 +6,7 @@ local Window = Rayfield:CreateWindow({
    Name = "PNS.GG",
    LoadingTitle = "PNS.GG",
    LoadingSubtitle = "Made By Larciruszz",
-   Theme = "Bloom",
+   Theme = "Serenity",
    ConfigurationSaving = {
       Enabled = false
    }
@@ -25,8 +25,8 @@ Character = c
 end)
 
 -- TABS
-local Main = Window:CreateTab("MAIN")
-local TPS = Window:CreateTab("TPS & GOTURN")
+local Main = Window:CreateTab("Main")
+local TPS = Window:CreateTab("TPS")
 local MORE = Window:CreateTab("MORE")
 
 --------------------------------------------------
@@ -51,7 +51,7 @@ end
 local infjump = false
 
 Main:CreateToggle({
-Name = "Infinite Jump",
+Name = "INF JUMP",
 CurrentValue = false,
 Callback = function(v)
 infjump = v
@@ -71,7 +71,7 @@ end)
 local noclip = false
 
 Main:CreateToggle({
-Name = "Noclip",
+Name = "NOCLIP",
 CurrentValue = false,
 Callback = function(v)
 noclip = v
@@ -86,6 +86,36 @@ v.CanCollide = false
 end
 end
 end
+end)
+
+--------------------------------------------------
+-- INST CLICK
+--------------------------------------------------
+
+local instClick = false
+
+Main:CreateToggle({
+Name = "INST-CLICK",
+CurrentValue = false,
+Callback = function(v)
+instClick = v
+end
+})
+
+RunService.RenderStepped:Connect(function()
+
+if instClick then
+
+for _,prompt in pairs(workspace:GetDescendants()) do
+if prompt:IsA("ProximityPrompt") then
+prompt.HoldDuration = 0
+prompt.RequiresLineOfSight = false
+prompt.MaxActivationDistance = 25
+end
+end
+
+end
+
 end)
 
 --------------------------------------------------
@@ -179,8 +209,8 @@ local bg
 
 MORE:CreateSlider({
 Name = "Fly Speed",
-Range = {10,2000},
-Increment = 20,
+Range = {10,3000},
+Increment = 30,
 CurrentValue = 30,
 Callback = function(v)
 flyspeed = v
@@ -212,6 +242,11 @@ if flying then
 
 local cam = workspace.CurrentCamera
 local move = Vector3.zero
+local speed = flyspeed
+
+if UIS:IsKeyDown(Enum.KeyCode.LeftShift) then
+speed = flyspeed * 2
+end
 
 if UIS:IsKeyDown(Enum.KeyCode.W) then
 move += cam.CFrame.LookVector
@@ -229,7 +264,15 @@ if UIS:IsKeyDown(Enum.KeyCode.D) then
 move += cam.CFrame.RightVector
 end
 
-bv.Velocity = move * flyspeed
+if UIS:IsKeyDown(Enum.KeyCode.Space) then
+move += Vector3.new(0,1,0)
+end
+
+if UIS:IsKeyDown(Enum.KeyCode.LeftControl) then
+move -= Vector3.new(0,1,0)
+end
+
+bv.Velocity = move * speed
 bg.CFrame = cam.CFrame
 
 end
