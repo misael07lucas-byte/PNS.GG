@@ -1,0 +1,247 @@
+-- LOAD RAYFIELD
+local Rayfield = loadstring(game:HttpGet("https://sirius.menu/rayfield"))()
+
+-- WINDOW
+local Window = Rayfield:CreateWindow({
+   Name = "PNS.GG",
+   LoadingTitle = "PNS.GG",
+   LoadingSubtitle = "Made By Larciruszz",
+   Theme = "Bloom",
+   ConfigurationSaving = {
+      Enabled = false
+   }
+})
+
+-- SERVICES
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local Player = Players.LocalPlayer
+local Character = Player.Character or Player.CharacterAdded:Wait()
+
+Player.CharacterAdded:Connect(function(c)
+Character = c
+end)
+
+-- TABS
+local Main = Window:CreateTab("MAIN")
+local TPS = Window:CreateTab("TPS & GOTURN")
+local MORE = Window:CreateTab("MORE")
+
+--------------------------------------------------
+-- SPEED
+--------------------------------------------------
+
+Main:CreateToggle({
+   Name = "SPEED",
+   CurrentValue = false,
+   Callback = function(v)
+      local hum = Character:FindFirstChildOfClass("Humanoid")
+      if hum then
+         hum.WalkSpeed = v and 300 or 16
+      end
+   end
+})
+
+--------------------------------------------------
+-- INFINITE JUMP
+--------------------------------------------------
+
+local infjump = false
+
+Main:CreateToggle({
+   Name = "Infinite Jump",
+   CurrentValue = false,
+   Callback = function(v)
+      infjump = v
+   end
+})
+
+UIS.JumpRequest:Connect(function()
+if infjump then
+Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+end
+end)
+
+--------------------------------------------------
+-- NOCLIP
+--------------------------------------------------
+
+local noclip = false
+
+Main:CreateToggle({
+   Name = "Noclip",
+   CurrentValue = false,
+   Callback = function(v)
+      noclip = v
+   end
+})
+
+RunService.Stepped:Connect(function()
+if noclip then
+for _,v in pairs(Character:GetDescendants()) do
+if v:IsA("BasePart") then
+v.CanCollide = false
+end
+end
+end
+end)
+
+--------------------------------------------------
+-- TPS
+--------------------------------------------------
+
+local tp1,tp2,tp3
+
+TPS:CreateButton({
+Name = "Save TP 1",
+Callback = function()
+tp1 = Character.HumanoidRootPart.CFrame
+end
+})
+
+TPS:CreateButton({
+Name = "Save TP 2",
+Callback = function()
+tp2 = Character.HumanoidRootPart.CFrame
+end
+})
+
+TPS:CreateButton({
+Name = "Save TP 3",
+Callback = function()
+tp3 = Character.HumanoidRootPart.CFrame
+end
+})
+
+TPS:CreateButton({
+Name = "Teleport TP 1",
+Callback = function()
+if tp1 then
+Character.HumanoidRootPart.CFrame = tp1
+end
+end
+})
+
+TPS:CreateButton({
+Name = "Teleport TP 2",
+Callback = function()
+if tp2 then
+Character.HumanoidRootPart.CFrame = tp2
+end
+end
+})
+
+TPS:CreateButton({
+Name = "Teleport TP 3",
+Callback = function()
+if tp3 then
+Character.HumanoidRootPart.CFrame = tp3
+end
+end
+})
+
+--------------------------------------------------
+-- GOTURN
+--------------------------------------------------
+
+local goturn
+local lastpos
+
+TPS:CreateButton({
+Name = "Save GoTurn",
+Callback = function()
+goturn = Character.HumanoidRootPart.CFrame
+end
+})
+
+TPS:CreateButton({
+Name = "GoTurn",
+Callback = function()
+if goturn then
+lastpos = Character.HumanoidRootPart.CFrame
+Character.HumanoidRootPart.CFrame = goturn
+task.wait(1)
+Character.HumanoidRootPart.CFrame = lastpos
+end
+end
+})
+
+--------------------------------------------------
+-- FLY
+--------------------------------------------------
+
+local flying = false
+local flyspeed = 30
+local bv
+local bg
+
+MORE:CreateSlider({
+Name = "Fly Speed",
+Range = {10,70},
+Increment = 1,
+CurrentValue = 30,
+Callback = function(v)
+flyspeed = v
+end
+})
+
+MORE:CreateToggle({
+Name = "Fly",
+CurrentValue = false,
+Callback = function(v)
+
+flying = v
+
+local hrp = Character:WaitForChild("HumanoidRootPart")
+
+if flying then
+
+bv = Instance.new("BodyVelocity")
+bv.MaxForce = Vector3.new(9e9,9e9,9e9)
+bv.Parent = hrp
+
+bg = Instance.new("BodyGyro")
+bg.MaxTorque = Vector3.new(9e9,9e9,9e9)
+bg.Parent = hrp
+
+RunService.RenderStepped:Connect(function()
+
+if flying then
+
+local cam = workspace.CurrentCamera
+local move = Vector3.zero
+
+if UIS:IsKeyDown(Enum.KeyCode.W) then
+move += cam.CFrame.LookVector
+end
+
+if UIS:IsKeyDown(Enum.KeyCode.S) then
+move -= cam.CFrame.LookVector
+end
+
+if UIS:IsKeyDown(Enum.KeyCode.A) then
+move -= cam.CFrame.RightVector
+end
+
+if UIS:IsKeyDown(Enum.KeyCode.D) then
+move += cam.CFrame.RightVector
+end
+
+bv.Velocity = move * flyspeed
+bg.CFrame = cam.CFrame
+
+end
+
+end)
+
+else
+
+if bv then bv:Destroy() end
+if bg then bg:Destroy() end
+
+end
+
+end
+})
