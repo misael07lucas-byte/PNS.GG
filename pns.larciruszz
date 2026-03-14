@@ -34,14 +34,14 @@ local MORE = Window:CreateTab("MORE")
 --------------------------------------------------
 
 Main:CreateToggle({
-   Name = "SPEED",
-   CurrentValue = false,
-   Callback = function(v)
-      local hum = Character:FindFirstChildOfClass("Humanoid")
-      if hum then
-         hum.WalkSpeed = v and 300 or 16
-      end
-   end
+Name = "SPEED",
+CurrentValue = false,
+Callback = function(v)
+local hum = Character:FindFirstChildOfClass("Humanoid")
+if hum then
+hum.WalkSpeed = v and 500 or 16
+end
+end
 })
 
 --------------------------------------------------
@@ -51,11 +51,11 @@ Main:CreateToggle({
 local infjump = false
 
 Main:CreateToggle({
-   Name = "Infinite Jump",
-   CurrentValue = false,
-   Callback = function(v)
-      infjump = v
-   end
+Name = "Infinite Jump",
+CurrentValue = false,
+Callback = function(v)
+infjump = v
+end
 })
 
 UIS.JumpRequest:Connect(function()
@@ -71,11 +71,11 @@ end)
 local noclip = false
 
 Main:CreateToggle({
-   Name = "Noclip",
-   CurrentValue = false,
-   Callback = function(v)
-      noclip = v
-   end
+Name = "Noclip",
+CurrentValue = false,
+Callback = function(v)
+noclip = v
+end
 })
 
 RunService.Stepped:Connect(function()
@@ -89,7 +89,7 @@ end
 end)
 
 --------------------------------------------------
--- TPS
+-- TPS SAVE
 --------------------------------------------------
 
 local tp1,tp2,tp3
@@ -179,8 +179,8 @@ local bg
 
 MORE:CreateSlider({
 Name = "Fly Speed",
-Range = {10,70},
-Increment = 1,
+Range = {10,1000},
+Increment = 10,
 CurrentValue = 30,
 Callback = function(v)
 flyspeed = v
@@ -245,3 +245,51 @@ end
 
 end
 })
+
+--------------------------------------------------
+-- TP PLAYERS
+--------------------------------------------------
+
+MORE:CreateSection("TP PLAYERS")
+
+local function TeleportToPlayer(plr)
+
+if plr == Player then return end
+
+local myChar = Player.Character
+local targetChar = plr.Character
+
+if myChar and targetChar then
+
+local myHRP = myChar:FindFirstChild("HumanoidRootPart")
+local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
+
+if myHRP and targetHRP then
+myHRP.CFrame = targetHRP.CFrame * CFrame.new(0,0,3)
+end
+
+end
+end
+
+local function CreatePlayerButton(plr)
+
+if plr == Player then return end
+
+local playerName = plr.DisplayName.." (@"..plr.Name..")"
+
+MORE:CreateButton({
+Name = "TP → "..playerName,
+Callback = function()
+TeleportToPlayer(plr)
+end
+})
+
+end
+
+for _,plr in pairs(Players:GetPlayers()) do
+CreatePlayerButton(plr)
+end
+
+Players.PlayerAdded:Connect(function(plr)
+CreatePlayerButton(plr)
+end)
