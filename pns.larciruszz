@@ -179,8 +179,8 @@ local bg
 
 MORE:CreateSlider({
 Name = "Fly Speed",
-Range = {10,5000},
-Increment = 50,
+Range = {10,2000},
+Increment = 20,
 CurrentValue = 30,
 Callback = function(v)
 flyspeed = v
